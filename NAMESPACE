@@ -1,0 +1,21 @@
+##useDynLib(blas, dqr, share_debug)
+## useDynLib(cshare, share_debug)
+
+##importFrom(methods, setGeneric, setClass, classRepresentation)
+import(methods)
+
+export(cshare, shareTest)
+
+## general methods
+exportMethods(nSNP, nameSNP, nSeq, nameSeq)
+
+exportClasses(genoSet)
+exportMethods(genoSeq, phenoData, haplo)
+
+exportClasses(haploSet)
+exportMethods(haploSeq, haploFreq)
+
+exportClasses(haplo)
+
+exportClasses(share)
+exportMethods(dplot)

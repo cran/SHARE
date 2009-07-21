@@ -1,0 +1,290 @@
+%
+% NOTE -- ONLY EDIT THE .Rnw FILE!!!  The .tex file is
+% likely to be overwritten.
+%
+%\VignetteIndexEntry{SHARE}
+%\VignetteDepends{}
+%\VignetteKeywords{Documentation}
+%\VignettePackage{SHARE}
+\documentclass[12pt]{article}
+
+\usepackage{times}
+\usepackage{hyperref}
+\usepackage[authoryear,round]{natbib}
+
+\textwidth=6.2in
+\textheight=8.5in
+%\parskip=.3cm
+\oddsidemargin=.1in
+\evensidemargin=.1in
+\headheight=-.3in
+
+\newcommand{\scscst}{\scriptscriptstyle}
+\newcommand{\scst}{\scriptstyle}
+
+\newcommand{\R}{{\textsf{R}}}
+\newcommand{\code}[1]{{\texttt{#1}}}
+\newcommand{\term}[1]{{\emph{#1}}}
+\newcommand{\Rpackage}[1]{\textsf{#1}}
+\newcommand{\Rfunction}[1]{\texttt{#1}}
+\newcommand{\Robject}[1]{\texttt{#1}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+\newcommand{\Rmethod}[1]{{\textit{#1}}}
+\newcommand{\Rfunarg}[1]{{\textit{#1}}}
+
+\bibliographystyle{plainnat}
+
+\begin{document}
+
+\title{The \Rpackage{SHARE} package:\\{\bf S}NP-{\bf H}aplotype {\bf A}daptive {\bf RE}gression}
+\author{Ting-Yuan Liu, James Y. Dai}
+\maketitle
+
+\section{Introduction}
+Association studies have been widely used to identify genetic liability variants for complex diseases. 
+While scanning the chromosomal region one SNP at a time may not fully explore linkage disequilibrium (LD), haplotype analyses tend to require a fairly large number of parameters, thus potentially losing power. 
+Clustering algorithms, such as the cladistic approach, have been proposed to reduce the dimensionality, yet they have important limitations. 
+We propose the SHARE algorithm \citep{Dai2009} that seeks the most informative set of SNPs for genetic association in a targeted region by growing/shrinking haplotypes with one more/less SNP in a stepwise fashion, and comparing prediction errors of different models via cross-validation. This is the manual of the \Rpackage{SHARE} package.  
+
+%%Depending on the evolutionary history of the disease mutation and the markers, this set may contain a single SNP, or several SNPs that lay foundation for haplotype analysis. 
+%%Haplotype phase ambiguity is effectively accounted for by treating haplotype reconstruction as a part of the learning procedure. 
+%%Simulations and data application show that our method has improved power over existing methodologies, and the results are informative in the search for disease-causal loci.
+
+\section{Prequisites}
+
+Both \Rpackage{haplo.stats} and \Rpackage{MASS} packages are required for using the \Rpackage{SHARE} package.  
+They will be loaded automatically when loading the \Rpackage{SHARE} package.
+
+%%\begin{verbatim}
+%%FIXME:  should show the results of loading haplo.stats and MASS
+<<loadLibrary, echo=FALSE, results=hide>>=
+library(SHARE)
+@
+%%\end{verbatim}
+
+\section{SHARE Analysis}
+
+\Rpackage{SHARE} can handle both phased haplotype data and unphased genotype data.  
+For unphased genetic data, \Rpackage{SHARE} adopts the {\sl haplo.em} function in \Rpackage{haplo.stats} to estimate the probability of haplotype pairs.  
+Users can also phase the genotypic data upfront by using existing software such as PHASE or fastPHASE \citep{Stephens2001, Stephens2003}, then use \Rpackage{SHARE} to search for the most informative haplotypes.  
+We illustrate the usage of \Rpackage{SHARE} mainly on the genotypic data in Section \ref{egUnphased}, and briefly show how to input the phased data in Section \ref{egPhased}. 
+
+
+We use the Cystic Fibrosis data in \cite{Browning2006} for illustration.  
+The original \R{} dataset contains $186$ haplotypes based on $23$ SNPs, which can be found in \Rpackage{HapVLMC} package (\url{http://www.stat.auckland.ac.nz/~browning/HapVLMC/index.htm}).  
+Subject-level diploid genetic information, either haplotype or genotype sequences, and the clinical status (e.g., case or control) are required to perform the SHARE algorithm.  
+Therefore, we constructed the diploid level genotypic data (\Robject{keremRandAllele}) and haplotype data (\Robject{keremRandSeq}) by randomly pairing two haplotypes and stored them in the package.  
+
+<<keremRand>>=
+data(keremRand)
+ls()
+@ 
+
+The \Rclass{data.frame} object \Robject{keremRandSeq} contains \Sexpr{nrow(keremRandSeq)} sequences with \Sexpr{ncol(keremRandSeq)} SNPs.  
+The row names show the subject id and the sequence id within this subject.  
+The SNPs are coded as 1 referring to the large allele of the RFLP, and 2 referring to the smaller allele.  
+The vector object \Robject{keremRandStatus} provides the CF/control status of each subject.  
+$1$ indicates subjects in case group (i.e., CF), and $0$ indicates control group. 
+There are \Sexpr{sum(keremRandStatus==1)} subjects in CF group and \Sexpr{sum(keremRandStatus==0)} in control group.
+\Robject{keremRandAllele} is a \Rclass{matrix} object containing allelic data for 23 SNPs, coded as 0, 1, and 2 as the number of minor alleles. 
+
+\section{Unphased Genotype Sequences}\label{egUnphased}
+
+Starting from allelic data such as \Robject{keremRandAllele}, we first estimate the haplotypes and their frequencies.  
+\Rpackage{SHARE} performs the EM algorithm to obtain these parameter estimates.  
+
+\subsection{\Rclass{genoSet}}\label{genoSet}
+
+We first construct a \Rclass{genoSet} object from our genotype sequences and the phenotype information:
+
+<<genoSet>>=
+unphasedGeno <- new("genoSet",
+                    genoSeq = data.frame(keremRandAllele),
+                    phenoData = data.frame(CF=keremRandStatus)
+                    )
+unphasedGeno
+@ 
+
+\subsection{Haplotype Reconstruction}\label{hapRecon}
+The method \Rmethod{haplo} performs the EM-based haplotype reconstruction algorithm on \Rclass{genoSet} objects.  
+The reconstructed haplotypes as well as other information will be stored in the object of class \Rclass{haplo}.  
+
+<<unphasedHaplo>>=
+unphasedHaplo <- haplo(unphasedGeno)
+unphasedHaplo
+@
+
+\subsection{SHARE Algorithm}\label{unphaseSHARE}
+
+The next step is to search for the most informative set of SNPs and its associated haplotype model.  
+The default method is to compare prediction deviance via ten-fold cross-validation (ModSelMethod=''Cross-Val'').  
+Alternatively, we also provide the BIC criterion for faster computation (ModSelMethod=''BIC'').  
+The mode of inheritance for haplotype effects can be specified to be additive (Minherit=''additive''), dominant (Minherit=''dominant''), or recessive (Minherit=''recessive'').  
+The \Rfunction{cshare} function will search for the best subset up to a user-defined maximum number of SNPs (default 6 SNPs).
+%%Because phenotype data are not stored in \Rclass{haplo} objects, we have to input them to the \Rfunction{cshare} function.
+\\
+
+The \Rfunction{cshare} function outputs a \Rclass{share} object, which contains the best size of SNPs, and either the prediction deviance or BIC.  
+If the best subset is null set (i.e., the model with intercept only), there is no genetic association in the candidate region.  
+If the best subset contains at least $1$ SNP, \Rfunction{cshare} also outputs the haplotype frequencies, the estimated haplotype effect, nominal p-values in the final model, and the experiment-wise p-values that has corrected for multiple tests.   
+\\
+
+Here is an example that demostrates the SHARE algorithm by the cross-validation method on an additive model:
+
+<<unphasedXV>>=
+unphasedKerem <- list()
+unphasedKerem[["Cross-Val"]] <- cshare(unphasedHaplo, status="CF",
+                                       nfold=20, maxsnps=5, ModSelMethod="Cross-Val", Minherit="additive")
+unphasedKerem[["Cross-Val"]]
+@ 
+
+Here is an example using the BIC method on an additive model:
+
+<<unphasedBIC>>=
+unphasedKerem[["BIC"]] <- cshare(unphasedHaplo, , status="CF",
+                         maxsnps=5, ModSelMethod="BIC", Minherit="additive", verbose=1)
+unphasedKerem[["BIC"]]
+@ 
+
+
+\subsection{Deviance/BIC Plot}
+
+We can also check the path of model searching by creating a deviance/BIC plot (Figure~\ref{unphasedDPlotXV} and Figure~\ref{unphasedDPlotBIC}) by using the method \Rmethod{dplot}.  
+The minimum deviance in the plot indicates the best size of SNP (e.g., the best size in Figure~\ref{unphasedDPlotXV} is \Sexpr{unphasedKerem[["Cross-Val"]]@bestsize} and in Figure~\ref{unphasedDPlotBIC} is \Sexpr{unphasedKerem[["BIC"]]@bestsize}).
+
+\begin{figure}[htbp]
+\begin{center}
+<<unphasedDPlotXV, fig=TRUE>>=
+dplot(unphasedKerem[["Cross-Val"]])
+@ 
+\end{center}
+\caption{\label{unphasedDPlotXV} Deviance Plot}
+\end{figure}
+
+\begin{figure}[htbp]
+\begin{center}
+<<unphasedDPlotBIC, fig=TRUE>>=
+dplot(unphasedKerem[["BIC"]])
+@ 
+\end{center}
+\caption{\label{unphasedDPlotBIC} BIC Plot}
+\end{figure}
+
+\newpage
+
+\subsection{Permutation Test}
+
+If the best model size is zero, there will appear to be no genetic association in the region of interest.  
+There is no need to perform a permutation test.  
+For final models with at least $1$ SNP, we permute case-control labels $1000$ times regardless of the genotypic data, carry out model searching for each permuted dataset, and compute the nominal p-value using a Wald test.  
+Finally the experiment-wise p-value is computed by comparing the observed p-value to its null distribution \citep{Besag1991}.
+\\
+
+Here is an example that tests the SHARE algorithm result from the cross-validation method.  
+%%(Because it is time consuming to complete the permutation test, we didn't run it in this vignette.  
+%%Instead, we show the code to run the permutation test and the result we obtained before.)  
+<<permu>>=
+extdataDir <- system.file("extdata", package = "SHARE")
+if("unphasedPermuPValue.RData" %in% dir(extdataDir)){
+    load(file.path(extdataDir, "unphasedPermuPValue.RData"))
+}else{
+    unphasedPermuPValue <- shareTest(outObj=unphasedKerem[["Cross-Val"]],
+                                     haploObj=unphasedHaplo,
+                                     status="CF",
+                                     nperm=1000 
+                                     )
+}
+unphasedPermuPValue
+@ 
+
+\section{Phased Genotype Sequences}\label{egPhased}
+
+For the data of phased DNA sequences, we first need to determine the set of unique haplotypes: 
+
+<<hapPool>>=
+hapSeq <- apply(keremRandSeq, 1, 
+		function(x){
+			paste(x, sep="", collapse="-")
+			}
+		)
+
+uniHap <- unique(hapSeq)
+nHap <- length(uniHap)
+hapNum <- unlist(sapply(1:nHap, 
+                        function(x){
+                            paste(paste(rep("0", ceiling(log10(nHap)) - nchar(as.character(x))), collapse=""), x, sep="", collapse="")
+                        })
+                 )
+names(uniHap) <- paste("hap_", hapNum, sep="")
+
+hapPool <- strsplit(uniHap, "-")
+hapPool <- data.frame(t(data.frame(lapply(hapPool, function(x){as.numeric(x)}))))
+colnames(hapPool) <- colnames(keremRandSeq)
+@ 
+
+There are \Sexpr{nHap} unique haplotypes determined, and they are stored in the \Rclass{data.frame} object \Robject{hapPool}.  
+\\
+
+For each unique haplotype, we also need to calculate its frequency among the observed haplotype sample:
+
+<<hapFreq>>=
+hapCount <- sapply(uniHap, function(x){
+		                       sum(x == hapSeq)
+				       }
+		  )
+
+hapFreq <- hapCount / sum(hapCount)
+@ 
+
+Then we need to determine the index of every haplotype for each subject:
+
+<<hapIndex>>=
+noNameUniHap <- uniHap
+names(noNameUniHap) <- NULL
+
+hapIndex <- sapply(hapSeq, function(x){which(x == noNameUniHap)})
+hap1Index <- hapIndex[c(1:length(hapIndex) %% 2) == 1]
+hap2Index <- hapIndex[c(1:length(hapIndex) %% 2) == 0]
+@ 
+
+The object \Robject{hap1Index} indicates the first haplotype for each subject, and \Robject{hap2Index} indicates the second haplotype.  
+\\
+
+We can then store all information together in a \Rclass{haplo} object:
+
+<<widthOption, echo=FALSE, results=hide>>=
+options(width=60)
+@
+
+<<phasedHaplo>>=
+phasedHaplo <- new("haplo",
+			haploSeq = hapPool,
+			haploFreq = hapFreq,
+			hap1 = hap1Index,
+			hap2 = hap2Index,
+			poolHapPair = as.character(1:length(hap1Index)),
+			nPosHapPair = table(1:length(hap1Index)),
+			post = rep(1, length(hap1Index)),
+			pheno = data.frame(CF=keremRandStatus)
+)
+@ 
+
+<<widthOption, echo=FALSE, results=hide>>=
+options(width=80)
+@
+
+The rest of the commands are the same as those for unphased data in Section \ref{unphaseSHARE}.
+
+\section{Session Information}
+
+The version number of \R{} and packages loaded for generating the vignette were:
+
+\begin{verbatim}
+<<sessionInfo, echo=FALSE, results=tex>>=
+sessionInfo()
+@
+\end{verbatim}
+
+\bibliography{SHARE}
+
+\end{document}
