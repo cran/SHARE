@@ -58,7 +58,7 @@ cshare <- function(haploObj,    ## haploObj
         stop("The length of argument maxsnps must be 1.")
     }
     if(maxsnps>(ncol(haploObj@haploSeq)-1)){
-        stop("The value of argument maxsnps must be less or equal to the total number of SNPs.")
+        stop("The value of argument maxsnps must be less than the total number of SNPs.")
     }
 
     uhap <- rep(0, length(haploObj@haploFreq)* ncol(haploObj@haploSeq)) 
@@ -247,8 +247,8 @@ shareTest <- function(outObj,            ## the returned object from chare funct
     for (i in 1:nperm) {
         set.seed(38329832+i)
         if (i%%10==0) cat(i, "... ")
-        y <- sample(as.vector(haploObj@pheno[, status]))
-        out <- cshare(haploObj, y, outObj@nFold, outObj@maxSNP, tol, verbose,
+        haploObj@pheno[, "y"] <- sample(as.vector(haploObj@pheno[, status]))
+        out <- cshare(haploObj, "y", outObj@nFold, outObj@maxSNP, tol, verbose,
                       outObj@modelmethod, outObj@inherit)
 
         if(out@bestsize!=0){
