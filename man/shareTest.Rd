@@ -8,7 +8,7 @@
 }
 \usage{
 shareTest(outObj, haploObj, status, tol = 1e-08, verbose = FALSE,
-          nperm = 1000)
+          nperm = 1000, seed=38329832)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -21,6 +21,7 @@ shareTest(outObj, haploObj, status, tol = 1e-08, verbose = FALSE,
   \item{tol}{The convergence parameter for the haplotype logistic regression.}
   \item{verbose}{TRUE/FALSE to decide whether to create log file for debug}
   \item{nperm}{maximal number of permutation tests }
+  \item{seed}{Seed for randomization in permutation tests }
 }
 \details{
 If the best model size is zero, there appears to be no genetic association in the region of interest.  

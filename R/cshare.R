@@ -239,13 +239,13 @@ shareTest <- function(outObj,            ## the returned object from chare funct
                       status,
                       tol=1e-8,
                       verbose=FALSE,     ## TRUE: turn on log file
-                      nperm=1000         ## the number of permutations 
+                      nperm=1000,        ## the number of permutations
+                      seed=38329832	 ## Random seed 
                       ) {
     phase <- 0
-
     count <- 0
+    set.seed(seed)
     for (i in 1:nperm) {
-        set.seed(38329832+i)
         if (i%%10==0) cat(i, "... ")
         haploObj@pheno[, "y"] <- sample(as.vector(haploObj@pheno[, status]))
         out <- cshare(haploObj, "y", outObj@nFold, outObj@maxSNP, tol, verbose,
