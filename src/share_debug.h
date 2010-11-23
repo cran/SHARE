@@ -1,26 +1,42 @@
 
+// 2010-07-15 : Valerie Obenchain
+// 			- Added "nngcov" "ngcov_vec" and "ngcov" for non-genetic covariate handling
 
 #define long int
 
 
-
 typedef struct node *Link1;
 typedef struct node {long snp_pos; Link1 next;} Node;
-typedef struct hap_model { long nhaps; long nsnps; double dev; long hapbase; long *snp_set; long *haplo_vec; double *hfreq; double *coef; } hmodel;
-
-
+typedef struct hap_model { 
+	long nhaps; 
+	long nngcov; 
+	long nsnps; 
+	double dev; 
+	long hapbase; 
+	long *snp_set; 
+	long nrec; 
+	long *haplo_vec; 
+	double *ngcov_vec; 
+	double *hfreq; 
+	double *coef; } hmodel;
 
 
 /********** function prototypes **********************/
  
-void xshare(long *indx_subj,long *nsubj,long *nobs,long *subj_rep,long *csctl,long *nloci,long *nfold,long *nhap,long *hap1code,long *hap2code,long *uhap,double *happrob,double *wgt,long  *maxsnps, double *deviance, double *tol, long *verbose, long *phase, long *Minherit); 
+void xshare(long *indx_subj,long *nsubj,long *nobs,long *subj_rep,long *csctl,long *nloci,long *nfold,long *nhap,long *hap1code,long *hap2code,long *uhap,double *happrob,double *wgt,long  *maxsnps, 
+long *nngcov, double *ngcov_vec, 
+double *deviance, double *tol, long *verbose, long *phase, long *Minherit); 
 
 
-void finalsubset(long *indx_subj,long *nsubj,long *nobs,long *subj_rep,long *csctl,long *nloci,long *nhap,long *hap1code,long *hap2code,long *uhap,double *happrob,double *wgt,long *maxsnps, long *bestsize, long *output_snp_set, long *out_haplo_vec, double *out_hap_freq, double *tol, long *phase, double *varstore, double *coef, long *out_nhaps, long *Minherit, long *verbose);
+void finalsubset(long *indx_subj,long *nsubj,long *nobs,long *subj_rep,long *csctl,long *nloci,long *nhap,long *hap1code,long *hap2code,long *uhap,double *happrob,double *wgt,
+long *nngcov, double *ngcov_vec,
+long *maxsnps, long *bestsize, long *output_snp_set, long *out_haplo_vec, double *out_hap_freq, double *tol, long *phase, double *varstore, double *coef, long *out_nhaps, long *Minherit, long *verbose);
 
 void shrink_phase_infer(long nsnp,long *nrecord,long *nhap,long *hap1code,long *hap2code,long *uhap,double *happrob,double *wgt,long nsubj,long *subj_rep, double tol, long *verbose,long ntestdata,long *test_hap1code,long *test_hap2code, FILE *file);  
 
-void varest(hmodel *best_model,long *nsubj,long *nobs,long *subj_rep,long *csctl,long *nloci,long *nhap,long *hap1code,long *hap2code,long *uhap,double *happrob,double *wgt,long *snp_set, long nsnp_set, double cutoff, long Minherit, long *verbose,FILE *file, long *phase, double *varstore);
+void varest(hmodel *best_model,long *nsubj,long *nobs,long *subj_rep,long *csctl,long *nloci,long *nhap,long *hap1code,long *hap2code,long *uhap,double *happrob,double *wgt,long *snp_set, long nsnp_set, double cutoff, 
+long *nngcov, double **ngcov,
+long Minherit, long *verbose,FILE *file, long *phase, double *varstore);
 
 /*
   void extern_cross_val(long *nrecords,long *y,long *nsubj,long *subj_reps, long *haplotype_vec,long *nsnps,long *nhaps,long *hap1code,long *hap2code, double *freq, long *verbose, long *phase, double *dev); */
@@ -36,12 +52,18 @@ void haplo_cluster(long nrecords,long *hap1code,long *hap2code,long **haplotype,
 void iwls_bin(long n,double **x,long ncov,long *y,double *weights,double *mustart,long maxit,double tol,double *coef,double *deviance,long *conv, long *verbose, FILE *file);  
 
 
-hmodel *hap_shrink_reg(long *y,long  *haplotype_vec,long  nsnps,long  nhaps,long  *hap1code,long  *hap2code,double *weight,double *hfreq, long nrecords,long *nreps,long *snp_set,long nsnp_set,double cutoff,double *mustart,long maxit, long Minherit, double tol, long *verbose, FILE *file);  
+hmodel *hap_shrink_reg(long *y,long  *haplotype_vec,long  nsnps,long  nhaps,long  *hap1code,long  *hap2code,double *weight,double *hfreq, long nrecords,long *nreps,long *snp_set,long nsnp_set,double cutoff,double *mustart,
+long *nngcov, double **ngcov, 
+long maxit, long Minherit, double tol, long *verbose, FILE *file);  
 
-double cross_val(hmodel *result_model,long nrecords,long *y,long nsubj,long *subj_reps, long *haplotype_vec,long nsnps,long nhaps,long *hap1code,long *hap2code, double *freq, long Minherit, long *verbose, long *phase, FILE *file);
+double cross_val(hmodel *result_model,long nrecords,long *y,long nsubj,long *subj_reps, long *haplotype_vec,long nsnps,long nhaps,long *hap1code,long *hap2code, double *freq, 
+long *nngcov, double **ngcov,
+long Minherit, long *verbose, long *phase, FILE *file);
 
-
-void stepwise_search_alpha(long *indx_subj,long *nsubj,long *nobs, long *subj_rep,double *wgt, long *csctl,long *nloci,long *nhap,long *hap1code,long *hap2code,long *uhap,double *happrob,long *bestsize, long *Minherit, double *deviance, long  *maxsnp,double *tol,double *alpha,long *verbose,long *phase, long *output_snp_set, long *out_haplo_vec, double *out_hap_freq, double *varstore, double *coef, long *out_nhaps);
+void stepwise_search_alpha(long *indx_subj,long *nsubj,long *nobs, long *subj_rep,double *wgt, 
+long *csctl,long *nloci,long *nhap,long *hap1code,long *hap2code,long *uhap,double *happrob,long *bestsize, long *Minherit, double *deviance, long  *maxsnp,
+long *nngcov, double *ngcov_vec,
+double *tol,double *alpha,long *verbose,long *phase, long *output_snp_set, long *out_haplo_vec, double *out_hap_freq, double *varstore, double *coef, long *out_nhaps);
 
 
 long *insertionSort(long *numbers, long array_size, long *order);
@@ -59,6 +81,8 @@ double *double_vec(long n);
 long *long_vec(long n);
 
 long *long_mat_to_vec(long **Ymat, long nrow, long ncol);
+
+double *double_mat_to_vec(double **Ymat, long nrow, long ncol);
 
 static void errmsg(char *string);
 
@@ -78,7 +102,7 @@ void print_list_long(Node m, FILE *file);
 void print_hmodel(hmodel *m, FILE *file);
 
 
-hmodel *new_hmodel(long nsnps,long nhaps);
+hmodel *new_hmodel(long nsnps,long nhaps, long nngcov, long nrec);
 
 void copy_hmodel(hmodel *current, hmodel *best);
 

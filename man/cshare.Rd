@@ -10,7 +10,7 @@
    or BIC.
 }
 \usage{
-cshare(haploObj, status, nfold = 10, maxsnps, tol = 1e-08,
+cshare(haploObj, status, ncovar = 0, covar = NULL, nfold = 10, maxsnps, tol = 1e-08,
        verbose = FALSE, ModSelMethod = c("Cross-Val", "BIC"),
        Minherit = c("additive", "dominant", "recessive"))
 }
@@ -22,6 +22,10 @@ cshare(haploObj, status, nfold = 10, maxsnps, tol = 1e-08,
   %%  sample.}
   \item{status}{A character string indicating the column name of the phenotype in
     \code{haploObj@pheno} to be used as the clinical status in the analysis.}
+  \item{ncovar}{An integer indicating the number of non-genetic covariates.}
+  \item{covar}{A matrix of non-genetic covariates where the first column is 
+	the subject ID numbers that match the names in haploObj@nPosHapPair. 
+	Missing values are not allowed.} 
   \item{nfold}{An integer that determines how many folds in the
     cross-validation, if ModSelMethod="Cross-Val"}
   \item{maxsnps}{An integer that determines the maximal number of SNPs

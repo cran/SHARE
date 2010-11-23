@@ -7,7 +7,7 @@
   for model searching.
 }
 \usage{
-shareTest(outObj, haploObj, status, tol = 1e-08, verbose = FALSE,
+shareTest(outObj, haploObj, status, ncovar = 0, covar = NULL, tol = 1e-08, verbose = FALSE,
           nperm = 1000, seed=38329832)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -18,12 +18,17 @@ shareTest(outObj, haploObj, status, tol = 1e-08, verbose = FALSE,
   %%\item{phenoData}{The case-control status of the subjects}
   \item{status}{A character string indicating the column name of the phenotype in
     \code{haploObj@pheno} to be used as the clinical status in the analysis.}
+  \item{ncovar}{An integer indicating the number of non-genetic covariates.}
+  \item{covar}{A matrix of non-genetic covariates where the first column is
+	the subject ID numbers that match the names in haploObj@nPosHapPair.
+	Missing values are not allowed.} 
   \item{tol}{The convergence parameter for the haplotype logistic regression.}
   \item{verbose}{TRUE/FALSE to decide whether to create log file for debug}
   \item{nperm}{maximal number of permutation tests }
   \item{seed}{Seed for randomization in permutation tests }
 }
 \details{
+If non-genetic covariates were used in creating \code{outObj}, they must also be entered in the \code{shareTest} function. 
 If the best model size is zero, there appears to be no genetic association in the region of interest.  
 There is no need to perform a permutation test.  
 For final models with at least 1 SNPs, we permute case-control labels 1000 times regardless of the genotypic data, carry out model searching for each permuted dataset, and compute the nominal p-value using a Wald test.  

@@ -10,6 +10,8 @@
 ##      2009-03-30
 ##              - change "STE" to "Standard Error"
 ##              - add (Intercept) to hap1
+##      2010-07-15
+##              - add handling of non-genetic covariates 
 
 finalsubset <- function(shareObj,
                         phenoData,
@@ -30,7 +32,6 @@ finalsubset <- function(shareObj,
             outputsnp<-rep(0, shareObj@bestsize)
         }
 
-        ## FIXME:  need to define the 1000 in the argument
         varstore <- rep(0,1000)
         coef <- rep(0,100)
         outnhaps=0
@@ -51,9 +52,10 @@ finalsubset <- function(shareObj,
                     isUniHap=as.integer(shareObj@uhap),
                     hapFreq=as.numeric(shareObj@haploFreq),
                     postHap=as.numeric(shareObj@post),
+                    nngcov=as.integer(shareObj@nngcov),
+                    ngcov_vec=as.numeric(shareObj@ngcov),
 
                     maxSNP=as.integer(shareObj@maxSNP),
-                    
                     as.integer(shareObj@bestsize),
                     outputsnp=as.integer(outputsnp),
                     outhapvec=as.integer(outhapvec),
@@ -70,19 +72,24 @@ finalsubset <- function(shareObj,
                     )
 
         ## var-covar matrix
-        amat <- matrix(temp1$varstore[1:(temp1$outnhaps ^2)], nrow=temp1$outnhaps,
-                       ncol=temp1$outnhaps, byrow=TRUE)
-        bmat <- matrix(temp1$varstore[((temp1$outnhaps ^2)+1):(2*(temp1$outnhaps ^2))],
-                       nrow=temp1$outnhaps, ncol=temp1$outnhaps, byrow=TRUE)
+        amat <- matrix(temp1$varstore[1:((temp1$outnhaps+temp1$nngcov) ^2)], 
+							  nrow=temp1$outnhaps+temp1$nngcov,
+                       ncol=temp1$outnhaps+temp1$nngcov, 
+							  byrow=TRUE)
+        bmat <- matrix(temp1$varstore[( ( (temp1$outnhaps+temp1$nngcov)^2 )+1):(2*( (temp1$outnhaps+temp1$nngcov) ^2))],
+                       nrow=temp1$outnhaps+temp1$nngcov, ncol=temp1$outnhaps+temp1$nngcov, byrow=TRUE)
 
-        require(MASS) ## for ginv funciton
+
+        require(MASS) ## for ginv function
         var<-ginv(amat)%*% bmat %*% ginv(amat)
         
-        pval <- drop(1-pchisq(t(temp1$coef[2:temp1$outnhaps]) %*% ginv(var[2:temp1$outnhaps,2:temp1$outnhaps]) %*% temp1$coef[2:temp1$outnhaps],temp1$outnhaps-1))
+        pval <- drop(
+			1-pchisq(t(temp1$coef[2:(temp1$outnhaps+temp1$nngcov)]) %*% ginv(var[2:(temp1$outnhaps+temp1$nngcov),2:(temp1$outnhaps+temp1$nngcov)]) %*% temp1$coef[2:(temp1$outnhaps+temp1$nngcov)],(temp1$outnhaps+temp1$nngcov)-1))
 
-        ## name of haplotypes & SNPs
+        ## name of haplotypes, SNPs and non-genetic covariates
         snpNames <- colnames(shareObj@haploSeq)[sort(temp1$outputsnp)]
         hapName <- paste("hap", 1:temp1$outnhaps, sep="")
+        ngcovName <- paste("ngCov", 1:temp1$nngcov, sep="")
         ## add (Intercept) to hap1
         ## hapName[1] <- paste(hapName[1], "(Intercept)")
         
@@ -97,9 +104,16 @@ finalsubset <- function(shareObj,
         hapFreq <- temp1$outhapfreq[1:temp1$outnhaps]
         names(hapFreq) <- hapName
 
-        ## coefficient
-        coef <- temp1$coef[1:temp1$outnhaps]
-        names(coef) <- hapName
+        ## coefficients (haplotypes  + non-genetic covariates)
+        coef <- temp1$coef[1:(temp1$outnhaps+temp1$nngcov)]
+        if(temp1$nngcov!=0) {names(coef) <- c(hapName, ngcovName)} else {names(coef) <- hapName}
+
+        ## currently not returning non-genetic covariates 
+        ## returning matrix of repeated values for subjects (ie, not original input covariates) 
+      	#  if(temp1$nngcov!=0) {
+			#  	ngcovMat <- data.frame(matrix(shareObj@ngcov, nrow=length(shareObj@poolHapPair), ncol=shareObj@nngcov, byrow=FALSE))
+      	#  names(ngcovMat) <- ngcovName 
+			#	} else { ngcovMat <- data.frame() }
 
         ## s.e.
         stdErr <- sqrt(diag(var))
@@ -111,12 +125,13 @@ finalsubset <- function(shareObj,
         pValue <- 1-pnorm(abs(zScore))
 
         ## GLM-like output
+
         haploTest <- data.frame(coef, stdErr, zScore, pValue)
         colnames(haploTest) <- c("Coefficient", "Standard Error", "z-Score", "p-Value")
         hapbase <- which.max(temp1$outhapfreq[1:temp1$outnhaps])
         hapName1 <- paste("hap",c(hapbase,(1:temp1$outnhaps)[-hapbase]))
         hapName1[1] <- paste(hapName1[1], "(Intercept)")
-        rownames(haploTest) <- hapName1
+        if(temp1$nngcov!=0) {rownames(haploTest) <- c(hapName1, ngcovName)} else {rownames(haploTest) <- hapName1} 
 
         outObj <- shareObj
         class(outObj) <- "share"

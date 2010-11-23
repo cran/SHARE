@@ -37,7 +37,7 @@
 \begin{document}
 
 \title{The \Rpackage{SHARE} package:\\{\bf S}NP-{\bf H}aplotype {\bf A}daptive {\bf RE}gression}
-\author{Ting-Yuan Liu, James Y. Dai}
+\author{Ting-Yuan Liu and James Y. Dai}
 \maketitle
 
 \section{Introduction}
@@ -120,20 +120,21 @@ The next step is to search for the most informative set of SNPs and its associat
 The default method is to compare prediction deviance via ten-fold cross-validation (ModSelMethod=''Cross-Val'').  
 Alternatively, we also provide the BIC criterion for faster computation (ModSelMethod=''BIC'').  
 The mode of inheritance for haplotype effects can be specified to be additive (Minherit=''additive''), dominant (Minherit=''dominant''), or recessive (Minherit=''recessive'').  
-The \Rfunction{cshare} function will search for the best subset up to a user-defined maximum number of SNPs (default 6 SNPs).
+The \Rfunction{cshare} function will search for the best subset up to a user-defined maximum number of SNPs (default 6 SNPs).\\
+
+Non-genetic covariates can be included in the model. The covariates should be input as a \Rclass{matrix} or \Rclass{dataframe} with the first column containing the subject id which must match the names in \Rclass{haploObj@pheno}. Missing values for the non-genetic covariates are not allowed. Data for subjects with missing values should be removed and the haplotype reconstruction step using the \Rmethod{haplo} method should be re-run. The \Rfunction{cshare} function can then be called with the \Robject{haplo} object and non-genetic covariates. \\ 
+
 %%Because phenotype data are not stored in \Rclass{haplo} objects, we have to input them to the \Rfunction{cshare} function.
-\\
 
 The \Rfunction{cshare} function outputs a \Rclass{share} object, which contains the best size of SNPs, and either the prediction deviance or BIC.  
 If the best subset is null set (i.e., the model with intercept only), there is no genetic association in the candidate region.  
-If the best subset contains at least $1$ SNP, \Rfunction{cshare} also outputs the haplotype frequencies, the estimated haplotype effect, nominal p-values in the final model, and the experiment-wise p-values that has corrected for multiple tests.   
-\\
+If the best subset contains at least $1$ SNP, \Rfunction{cshare} also outputs the haplotype frequencies, the estimated haplotype effect, nominal p-values in the final model, and the experiment-wise p-values that has corrected for multiple tests.  \\ 
 
 Here is an example that demostrates the SHARE algorithm by the cross-validation method on an additive model:
 
 <<unphasedXV>>=
 unphasedKerem <- list()
-unphasedKerem[["Cross-Val"]] <- cshare(unphasedHaplo, status="CF",
+unphasedKerem[["Cross-Val"]] <- cshare(haploObj=unphasedHaplo, status="CF",
                                        nfold=20, maxsnps=5, ModSelMethod="Cross-Val", Minherit="additive")
 unphasedKerem[["Cross-Val"]]
 @ 
@@ -141,8 +142,8 @@ unphasedKerem[["Cross-Val"]]
 Here is an example using the BIC method on an additive model:
 
 <<unphasedBIC>>=
-unphasedKerem[["BIC"]] <- cshare(unphasedHaplo, , status="CF",
-                         maxsnps=5, ModSelMethod="BIC", Minherit="additive", verbose=1)
+unphasedKerem[["BIC"]] <- cshare(haploObj=unphasedHaplo, status="CF",
+                         maxsnps=5, ModSelMethod="BIC", Minherit="additive", verbose=TRUE)
 unphasedKerem[["BIC"]]
 @ 
 
@@ -177,8 +178,7 @@ dplot(unphasedKerem[["BIC"]])
 If the best model size is zero, there will appear to be no genetic association in the region of interest.  
 There is no need to perform a permutation test.  
 For final models with at least $1$ SNP, we permute case-control labels $1000$ times regardless of the genotypic data, carry out model searching for each permuted dataset, and compute the nominal p-value using a Wald test.  
-Finally the experiment-wise p-value is computed by comparing the observed p-value to its null distribution \citep{Besag1991}.
-\\
+Finally the experiment-wise p-value is computed by comparing the observed p-value to its null distribution \citep{Besag1991}.\\
 
 Here is an example that tests the SHARE algorithm result from the cross-validation method.  
 %%(Because it is time consuming to complete the permutation test, we didn't run it in this vignette.  
@@ -196,7 +196,9 @@ if("unphasedPermuPValue.RData" %in% dir(extdataDir)){
 }
 unphasedPermuPValue
 @ 
-
+%\\
+%Note that if non-genetic covariates were included in the model that created the \Robject{unphasedKerem[["Cross-Val"]]} object, they must also be included in the call to \Rfunction{shareTest}.
+%\\
 \section{Phased Genotype Sequences}\label{egPhased}
 
 For the data of phased DNA sequences, we first need to determine the set of unique haplotypes: 
@@ -222,8 +224,7 @@ hapPool <- data.frame(t(data.frame(lapply(hapPool, function(x){as.numeric(x)})))
 colnames(hapPool) <- colnames(keremRandSeq)
 @ 
 
-There are \Sexpr{nHap} unique haplotypes determined, and they are stored in the \Rclass{data.frame} object \Robject{hapPool}.  
-\\
+There are \Sexpr{nHap} unique haplotypes determined, and they are stored in the \Rclass{data.frame} object \Robject{hapPool}.  \\
 
 For each unique haplotype, we also need to calculate its frequency among the observed haplotype sample:
 
@@ -247,8 +248,7 @@ hap1Index <- hapIndex[c(1:length(hapIndex) %% 2) == 1]
 hap2Index <- hapIndex[c(1:length(hapIndex) %% 2) == 0]
 @ 
 
-The object \Robject{hap1Index} indicates the first haplotype for each subject, and \Robject{hap2Index} indicates the second haplotype.  
-\\
+The object \Robject{hap1Index} indicates the first haplotype for each subject, and \Robject{hap2Index} indicates the second haplotype.  \\
 
 We can then store all information together in a \Rclass{haplo} object:
 

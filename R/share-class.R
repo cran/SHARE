@@ -1,6 +1,11 @@
 ## Revision
 ##      2009-03-30
 ##              - add new slot "inherit" to store the value of "Minherit"
+## Revision
+##      2010-07-10
+##              - add new slots "nngcov" and "ngcov_vec" for non-genetic covariate information
+##                nngcov = number of non-genetic covariates, 
+##						ngcov_vec = vector of all covariate values
 
 setClass("share",
          representation(uhap="vector",
@@ -14,7 +19,9 @@ setClass("share",
                         finalHapTest="data.frame",
                         globalP="numeric",
                         modelmethod="character",
-                        inherit="character"
+                        inherit="character",
+                        nngcov="numeric",
+                        ngcov="vector"
                         ),
          contains="haplo"
          )

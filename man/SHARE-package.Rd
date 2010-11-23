@@ -28,10 +28,11 @@ they have important limitations.  We propose the SHARE algorithm
 that seeks the most informative set of SNPs for genetic
 association in a targeted region by growing/shrinking haplotypes with
 one more/less SNP in a stepwise fashion, and comparing prediction errors
-of different models via cross-validation.
+of different models via cross-validation. The model can also accomodate
+for non-genetic covariates.
 }
 \author{
-  James Y. Dai & Ting-Yuan Liu
+  James Y. Dai and Ting-Yuan Liu
 }
 \references{
 Dai, J. Y., LeBlanc, M., Smith, N. L., Psaty, B. M. and Kooperberg, C. (2009). SHARE: 

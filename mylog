@@ -1,0 +1,365 @@
+------------------------------------------------------------------------
+r38458 | ting | 2010-02-08 13:57:03 -0800 (Mon, 08 Feb 2010) | 6 lines
+
+- move to SHARE 1.0.5
+  - R/cshare.R
+    - allow shareTest to specify rnadom seed
+  - man/shareTest.Rd
+    - modify the manual accordingly
+
+------------------------------------------------------------------------
+r38044 | ting | 2010-01-22 01:01:39 -0800 (Fri, 22 Jan 2010) | 3 lines
+
+- SHARE
+  - fix a bug in the error message and move to version 1.0.3
+
+------------------------------------------------------------------------
+r37406 | ting | 2009-12-15 15:08:10 -0800 (Tue, 15 Dec 2009) | 3 lines
+
+- SHARE 1.0.3
+  - fix a bug reported by the user Russell Thomson in shareTest()
+
+------------------------------------------------------------------------
+r34610 | ting | 2009-08-11 13:51:47 -0700 (Tue, 11 Aug 2009) | 2 lines
+
+- move SHARE to jdai/
+
+------------------------------------------------------------------------
+r33914 | ting | 2009-07-21 12:30:50 -0700 (Tue, 21 Jul 2009) | 3 lines
+
+move to version 1.0.2 after fixing bugs reported by CRAN.  Checked by R version 2.10.0 Under 
+development (unstable) (2009-07-21 r48973).
+
+------------------------------------------------------------------------
+r33881 | ting | 2009-07-20 13:31:41 -0700 (Mon, 20 Jul 2009) | 2 lines
+
+- move to version 1.0.1 after fixing bugs reported from CRAN
+
+------------------------------------------------------------------------
+r33467 | ting | 2009-07-08 15:00:57 -0700 (Wed, 08 Jul 2009) | 2 lines
+
+- move to version 1.0.0 witl all final modifications
+
+------------------------------------------------------------------------
+r33314 | ting | 2009-07-02 16:27:15 -0700 (Thu, 02 Jul 2009) | 6 lines
+
+- Final modifications in version 0.0.20
+  - add new argument "status" in cshare & shareTest to indicate the clinical status to use in the analysis.
+    - this is because the class "haplo" may contain more than one phenotype
+  - add the new data object into the manual
+  - update the vignette as well as the reference
+
+------------------------------------------------------------------------
+r33265 | ting | 2009-07-01 14:45:43 -0700 (Wed, 01 Jul 2009) | 2 lines
+
+- update from James' email on June 29, 2009
+
+------------------------------------------------------------------------
+r33259 | ting | 2009-07-01 11:44:02 -0700 (Wed, 01 Jul 2009) | 3 lines
+
+- SHARE.Rnw
+  - update from James on 2009-06-29
+
+------------------------------------------------------------------------
+r33256 | ting | 2009-07-01 11:38:38 -0700 (Wed, 01 Jul 2009) | 2 lines
+
+- Move to version 0.0.20 and recover the vignette from James' machine
+
+------------------------------------------------------------------------
+r33104 | ting | 2009-06-26 15:45:57 -0700 (Fri, 26 Jun 2009) | 2 lines
+
+- updated from James' backup
+
+------------------------------------------------------------------------
+r33103 | jdai | 2009-06-26 15:08:42 -0700 (Fri, 26 Jun 2009) | 2 lines
+
+- remove flowchart
+
+------------------------------------------------------------------------
+r33102 | jdai | 2009-06-26 15:07:44 -0700 (Fri, 26 Jun 2009) | 2 lines
+
+- Jame's version of Rnw & BIB
+
+------------------------------------------------------------------------
+r33101 | jdai | 2009-06-26 15:05:35 -0700 (Fri, 26 Jun 2009) | 2 lines
+
+- renmae Ting's BIB file
+
+------------------------------------------------------------------------
+r33100 | jdai | 2009-06-26 15:04:53 -0700 (Fri, 26 Jun 2009) | 2 lines
+
+- rename Ting's Rnw
+
+------------------------------------------------------------------------
+r33091 | ting | 2009-06-26 13:56:41 -0700 (Fri, 26 Jun 2009) | 22 lines
+
+- DESCRIPTION
+  - move to version 0.0.19
+- R/cshare.R
+  - fix (intercept) bug in BIC
+- src/share_debug.c
+  - add some comments
+- data/Kerem.RData & man/Kerem.Rd
+  - not include Kerem original data
+- man/keremRand.Rd
+  - manual for the psudo-subject data
+- inst/doc/SHARE_Analysis_Flowchart.eps & inst/doc/SHARE_Analysis_Flowchart.pdf
+  - flowchart of the SHARE analysis. 
+  - For some reason it is required to have the PDF file for building the package
+- inst/doc/SHARE.Rnw
+  - add plots, etc
+- inst/doc/SHARE.bib
+  - James' paper was accepted by Biostatistics
+- inst/extdata/permuPValue.RData
+  - old data, removed
+- inst/extdata/phasedPermuPValue.RData & inst/extdata/unphasedPermuPValue.RData
+  - new test p-values for both phased and unphased demonstration
+
+------------------------------------------------------------------------
+r32950 | ting | 2009-06-22 13:31:17 -0700 (Mon, 22 Jun 2009) | 3 lines
+
+- data/keremRand.RData
+  - psudo-subjects from Kerem data
+
+------------------------------------------------------------------------
+r32949 | ting | 2009-06-22 13:30:37 -0700 (Mon, 22 Jun 2009) | 9 lines
+
+- DESCRIPTION
+  - move to version 0.0.18
+- inst/doc/SHARE.bib
+  - add two references for PHASE
+- src/share_debug.c
+  - add some comments only
+- inst/doc/SHARE.Rnw
+  - finish the demo of phased data (R code only), need to modify the text
+
+------------------------------------------------------------------------
+r32340 | jdai | 2009-05-29 16:28:38 -0700 (Fri, 29 May 2009) | 2 lines
+
+- updated on 2009-05-29 by changing min freq & display bugs
+
+------------------------------------------------------------------------
+r31915 | jdai | 2009-05-15 15:41:56 -0700 (Fri, 15 May 2009) | 5 lines
+
+- src/share_debug.c
+  - fix the bug @ BIC search
+- R/cshare.R & inst/doc/SHARE.Rnw
+  - need to fix verbose part
+
+------------------------------------------------------------------------
+r31909 | ting | 2009-05-15 11:56:38 -0700 (Fri, 15 May 2009) | 6 lines
+
+- *.Rd
+  - change accordingly from the modifications
+  - brake the long sentance into more lines for better results in SHARE-manual.pdf
+- inst/extdata/sampledata.txt
+  - delete this data b/c it is no longer used in the package 
+
+------------------------------------------------------------------------
+r31904 | ting | 2009-05-15 10:27:02 -0700 (Fri, 15 May 2009) | 14 lines
+
+- src/share_debug.c
+  - add comments and fixed the bug @ BIC (2009-05-14)
+- R/cshare.R
+  - make the default of verbose=FALSE
+- R/haplo-class.R
+  - add new slot "pheno" to store pheno data after randomly sort the origianl data
+- R/genoSet-class.R
+  - randomly sort the data (for x-v method) and store the pheno data in the output object
+- DESCRIPTION
+  - move to version 0.0.16
+- inst/doc/SHARE.Rnw
+  - remove the part of randomly sorting data b/c it is included in haplo()
+  - dynamically report the best size in the text (dplot section)
+
+------------------------------------------------------------------------
+r30910 | ting | 2009-04-10 13:11:56 -0700 (Fri, 10 Apr 2009) | 2 lines
+
+- add two comments to show the potential location of bugs
+
+------------------------------------------------------------------------
+r30733 | jdai | 2009-04-03 17:07:39 -0700 (Fri, 03 Apr 2009) | 4 lines
+
+- fix bu in BIC method
+- use 40 folds in X-validation
+- to do: fix bug in FREE_hmodel
+
+------------------------------------------------------------------------
+r30601 | ting | 2009-03-31 16:50:29 -0700 (Tue, 31 Mar 2009) | 14 lines
+
+- DESCRIPTION
+  - move to version 0.0.15
+  - this version pass all checks in R CMD check
+- data/shareObj.RData & data/haploObj.RData & data/sampleSNP.RData
+  - using vignette as example instead of testing data
+- man/nSNP.Rd & man/nameSNP.Rd & man/nSeq.Rd & man/nameSeq.Rd
+  - separated *.Rd for general methods
+- man/haploSet-class.Rd & man/haplo.Rd & man/cshare.Rd & man/share-class.Rd & man/haplo-class.Rd & man/genoSet-class.Rd
+  - remove aliases of general methods
+- man/Kerem.Rd
+  - manual for Kerem dataset
+- man/shareTest.Rd
+  - manual for permutation test function shareTest()
+
+------------------------------------------------------------------------
+r30584 | ting | 2009-03-31 13:07:30 -0700 (Tue, 31 Mar 2009) | 5 lines
+
+- NAMESPACE
+  - import methods to fix the problem when R CMD CHECK the package
+- man/cshare.Rd
+  - fix the discrepancy between code and manual
+
+------------------------------------------------------------------------
+r30581 | ting | 2009-03-31 12:07:23 -0700 (Tue, 31 Mar 2009) | 19 lines
+
+- R/finalsubset.R
+  - change "STE" to "Standard Error"
+  - add (Intercept) to hap1
+- R/cshare.R
+  - change "STE" to "Standard Error"
+  - add (Intercept) to hap1
+  - in shareTest, remove arguments "nfold", "maxsnps", "ModSelMethod", because they are included in outObj already
+  - compare global p-values only if bestsize != 0
+- R/share-class.R
+  - add new slot "inherit" to store the value of "Minherit"
+- DESCRIPTION
+  - move to version 0.0.14
+- data/Kerem.RData & inst/extdata/permuPValue.RData
+  - new dataset added to the packate
+- inst/doc/SHARE.Rnw 
+  - using CF data as example
+- inst/doc/SHARE.bib
+  - add references of Browning (2006) and Kerem et al. (1989)
+
+------------------------------------------------------------------------
+r30315 | jdai | 2009-03-20 17:19:00 -0700 (Fri, 20 Mar 2009) | 2 lines
+
+fix bug in BIC selection
+
+------------------------------------------------------------------------
+r30307 | jdai | 2009-03-20 15:28:53 -0700 (Fri, 20 Mar 2009) | 2 lines
+
+fix bugs in finalsubset.R
+
+------------------------------------------------------------------------
+r30084 | ting | 2009-03-13 16:58:31 -0700 (Fri, 13 Mar 2009) | 18 lines
+
+- DESCRIPTION
+  - version 0.0.13
+- R/finalsubset.R
+  - change typo in haploObj and share class
+- R/cshare.R
+  - fix bug in calling finalsubset
+  - change argument in shareTest
+- man/haplo.Rd
+  - remove "wgt" argument in the manual
+- man/cshare.Rd
+  - remove phase argument in the manual
+- man/haplo-class.Rd
+  - re-type the definition of slots from haplo.em
+- NAMESPACE
+  - export shareTest
+- inst/doc/SHARE.Rnw
+  - update the calling of cshare()
+
+------------------------------------------------------------------------
+r29994 | ting | 2009-03-11 11:27:16 -0700 (Wed, 11 Mar 2009) | 8 lines
+
+- version 0.0.12
+  - re-organize the S4-class so that it will be easier to maintain
+  - add NAMESPACE
+  - add manual files
+- to do
+  - fine tune  the manual files
+  - modify the vignette
+
+------------------------------------------------------------------------
+r29750 | jdai | 2009-03-03 11:48:34 -0800 (Tue, 03 Mar 2009) | 2 lines
+
+- changed by James D by 2009-03-03
+
+------------------------------------------------------------------------
+r29448 | ting | 2009-02-18 15:57:19 -0800 (Wed, 18 Feb 2009) | 2 lines
+
+- commit the version for James D reviewing
+
+------------------------------------------------------------------------
+r27838 | ting | 2008-12-17 14:03:42 -0800 (Wed, 17 Dec 2008) | 3 lines
+
+- version 0.0.10
+  - modification per requests from James D
+
+------------------------------------------------------------------------
+r27329 | ting | 2008-12-03 15:18:47 -0800 (Wed, 03 Dec 2008) | 8 lines
+
+- version 0.0.9
+  - re-design the class by adding new class---genoSet & haploSet
+  - complete the GLM-like summary in finalsubset
+  - use different sample data
+- to do
+  - waiting for review by James D
+  - waiting for updated C code from James D
+
+------------------------------------------------------------------------
+r27279 | ting | 2008-12-02 15:20:29 -0800 (Tue, 02 Dec 2008) | 10 lines
+
+- version 0.0.8
+  - create finalsubset() to output the results in the form of finalsubset-class object
+  - add sample.ccSNP data
+- to do
+  - add NAMESPACE
+    - not use .First.lib, use .onLoad instaed
+    - rename the slots of each class to be more meanful
+      - then create accessor methods for each class 
+    - create vignette to demo the package
+
+------------------------------------------------------------------------
+r27187 | ting | 2008-11-26 15:15:52 -0800 (Wed, 26 Nov 2008) | 6 lines
+
+- version 0.0.7
+  - initial version of finalsubset
+  - class "share" is extended from "haplo"
+  - need to double check with jam D to see if the calculation of bestsize is correct
+  - need to create a class to store the results from finalsubset()
+
+------------------------------------------------------------------------
+r27183 | ting | 2008-11-26 14:18:24 -0800 (Wed, 26 Nov 2008) | 5 lines
+
+- version 0.0.6
+  - define class "haplo" to store the haplotype reconstruction results from haplo.em
+  - define haplo and cshare functions to create "haplo" and "share" class objects, respectively
+  - commit before working on finalsubset
+
+------------------------------------------------------------------------
+r27138 | ting | 2008-11-25 10:48:03 -0800 (Tue, 25 Nov 2008) | 6 lines
+
+- version 0.0.5
+  - define "share" class and method "dplot"
+  - move the code "cshare" to the package
+  - use geno1to2 from haplo.stat in the cshare()
+  - new update of src/share_debug.c from James D
+
+------------------------------------------------------------------------
+r26983 | ting | 2008-11-20 15:51:28 -0800 (Thu, 20 Nov 2008) | 2 lines
+
+- modification from James on src/share_debug.c & src/share_debug.h to output more data 
+
+------------------------------------------------------------------------
+r26982 | ting | 2008-11-20 15:46:56 -0800 (Thu, 20 Nov 2008) | 4 lines
+
+- vsrsion 0.0.3
+  - add haplo.stats as depending packages
+  - add R/zzz.SHARE.R to make dynamic load work
+
+------------------------------------------------------------------------
+r26707 | ting | 2008-11-10 16:27:39 -0800 (Mon, 10 Nov 2008) | 3 lines
+
+- SHARE V 0.0.1
+  - initial commit for the draft package
+
+------------------------------------------------------------------------
+r26575 | ting | 2008-11-06 16:36:16 -0800 (Thu, 06 Nov 2008) | 2 lines
+
+- create SHARE for the trunk (develop) directory
+
+------------------------------------------------------------------------

@@ -52,6 +52,10 @@ Objects can be created by calls of the form \code{new("share", ...)}.
       frequencies of the original haplotype sequences with all SNPs}
     \item{\code{pheno}:}{Object of class \code{"data.frame"} to store
       the phenotype information}
+    \item{\code{nngcov}:}{Object of class \code{"numeric"}; the number
+		of non-genetic covariates}
+    \item{\code{ngcov}:}{Object of class \code{"vector"}; the vector 
+		of non-genetic covariates}
     \item{\code{inherit}:}{Character string to show which mode of
       inheritance for haplotype effects is specified.
     }
